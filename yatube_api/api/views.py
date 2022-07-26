@@ -11,6 +11,10 @@ from .serializers import (
 
 from rest_framework.pagination import LimitOffsetPagination
 
+from rest_framework import filters
+
+from django_filters.rest_framework import DjangoFilterBackend
+
 class IsAuthorOrReadOnly(permissions.BasePermission):
 
     message = 'Изменение чужого контента запрещено!'
@@ -23,7 +27,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -54,7 +58,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = FollowSerializer
-    #filter_backends = [filters.SearchFilter]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ['user__username', 'following__username']
 
     def get_queryset(self):

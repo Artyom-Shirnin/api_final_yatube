@@ -36,7 +36,7 @@ class FollowSerializer(serializers.ModelSerializer):
         slug_field='username',
         default=serializers.CurrentUserDefault()
     )
-    author = serializers.SlugRelatedField(
+    following = serializers.SlugRelatedField(
         queryset=User.objects.all(),
         slug_field='username',
     )
