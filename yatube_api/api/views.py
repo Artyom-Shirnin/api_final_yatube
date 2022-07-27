@@ -1,19 +1,16 @@
+from django_filters.rest_framework import DjangoFilterBackend
+
 from django.shortcuts import get_object_or_404
 
-from rest_framework import permissions
-
-from rest_framework import viewsets
-
 from posts.models import Group, Post, User
-from .serializers import (
-    CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
-)
+
+from rest_framework import filters, permissions, viewsets
 
 from rest_framework.pagination import LimitOffsetPagination
 
-from rest_framework import filters
-
-from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import (
+    CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
+)
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -61,11 +58,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post']
+    allowed_methods = ('GET', 'POST')
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = FollowSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    search_fields = ['user__username', 'following__username']
+    search_fields = ('user__username', 'following__username')
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user.username)
